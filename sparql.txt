@@ -25,13 +25,15 @@ PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
 SELECT ?disciplinaNome
 WHERE {
 	{
-		?tipoDeConhecimento :nome "Ciências Sociais" .
+		?tipoDeConhecimento a :TipoDeConhecimento ;
+			:nome "Ciências Sociais" .
 		?disciplina :pertenceA ?tipoDeConhecimento .
 		?disciplina :nome ?disciplinaNome .
 	}
 	UNION
 	{
-		?conceito :nome "Ciências Sociais" .
+		?conceito a :Conceito ;
+			:nome "Ciências Sociais" .
 		?conceito :eEstudadoEm ?disciplina .
 		?disciplina :nome ?disciplinaNome .
 	}
@@ -43,8 +45,9 @@ PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
 
 SELECT ?aplicacaoNome
 WHERE {
-  ?conceito :nome "Lógica Formal" .
-  ?conceito :temAplicacaoEm ?aplicacao .
+  ?conceito a :Conceito ;
+			:nome "Lógica Formal" ;
+			:temAplicacaoEm ?aplicacao .
   ?aplicacao :nome ?aplicacaoNome .
 }
 
@@ -54,7 +57,8 @@ PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
 
 SELECT ?disciplinaNome
 WHERE {
-  ?disciplina :pertenceA ?tipoDeConhecimento .
+  ?disciplina a :Disciplina ;
+			  :pertenceA ?tipoDeConhecimento .
   ?tipoDeConhecimento :nome "Ciências Exatas" .
   ?disciplina :nome ?disciplinaNome .
 }
@@ -65,7 +69,8 @@ PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
 
 SELECT ?mestreNome
 WHERE {
-  ?mestre :ativoDurante ?periodo .
+  ?mestre a :Mestre ;
+		  :ativoDurante ?periodo .
   ?periodo :nome "Século XIX" .
   ?mestre :nome ?mestreNome .
 }
@@ -76,7 +81,8 @@ PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
 
 SELECT ?aprendizNome
 WHERE {
-  ?aprendiz :aprende ?disciplina .
+  ?aprendiz a :Aprendiz ;
+			:aprende ?disciplina .
   ?disciplina :nome "Programação" .
   ?aprendiz :nome ?aprendizNome .
 }
@@ -87,7 +93,8 @@ PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
 
 SELECT ?disciplinaNome (COUNT(?aprendiz) AS ?numeroDeAprendizes)
 WHERE {
-  ?aprendiz :aprende ?disciplina .
+  ?aprendiz a :Aprendiz ;
+			:aprende ?disciplina .
   ?disciplina :nome ?disciplinaNome .
 }
 GROUP BY ?disciplinaNome
@@ -98,7 +105,8 @@ PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
 
 SELECT ?periodoNome (COUNT(?conceito) AS ?numeroDeConceitos)
 WHERE {
-  ?conceito :surgeEm ?periodo .
+  ?conceito a :Conceito ;
+			:surgeEm ?periodo .
   ?periodo :nome ?periodoNome .
 }
 GROUP BY ?periodoNome
