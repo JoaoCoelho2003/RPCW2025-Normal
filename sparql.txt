@@ -1,0 +1,143 @@
+12. Quais são os conceitos ensinados por um determinado mestre (arbitra um)?
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?conceito {
+    ?mestre a :Mestre ;
+            :nome "Aristóteles" ;
+               :ensina ?d .
+    ?conceito :eEstudadoEm ?d .
+}
+
+13. Que obras explicam o conceito de "Relatividade"?
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?obra {
+    ?obra a :Obra ;
+          :explica :Relatividade .
+}
+
+14. Em que disciplinas se estudam "Ciências Sociais"?
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?disciplinaNome
+WHERE {
+	{
+		?tipoDeConhecimento :nome "Ciências Sociais" .
+		?disciplina :pertenceA ?tipoDeConhecimento .
+		?disciplina :nome ?disciplinaNome .
+	}
+	UNION
+	{
+		?conceito :nome "Ciências Sociais" .
+		?conceito :eEstudadoEm ?disciplina .
+		?disciplina :nome ?disciplinaNome .
+	}
+}
+
+15. Qual é a aplicação prática dos conhecimentos em "Lógica Formal"?
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?aplicacaoNome
+WHERE {
+  ?conceito :nome "Lógica Formal" .
+  ?conceito :temAplicacaoEm ?aplicacao .
+  ?aplicacao :nome ?aplicacaoNome .
+}
+
+16. Quais disciplinas pertencem ao tipo de conhecimento "Ciências Exatas"?
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?disciplinaNome
+WHERE {
+  ?disciplina :pertenceA ?tipoDeConhecimento .
+  ?tipoDeConhecimento :nome "Ciências Exatas" .
+  ?disciplina :nome ?disciplinaNome .
+}
+
+17. Que mestres ensinaram no século XIX?
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?mestreNome
+WHERE {
+  ?mestre :ativoDurante ?periodo .
+  ?periodo :nome "Século XIX" .
+  ?mestre :nome ?mestreNome .
+}
+
+18. Que aprendizes estudam "Programação"?
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?aprendizNome
+WHERE {
+  ?aprendiz :aprende ?disciplina .
+  ?disciplina :nome "Programação" .
+  ?aprendiz :nome ?aprendizNome .
+}
+
+19. Qual a distribuição de aprendizes por disciplina? (Resultado será uma lista de pares: Disciplina, número de alunos)
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?disciplinaNome (COUNT(?aprendiz) AS ?numeroDeAprendizes)
+WHERE {
+  ?aprendiz :aprende ?disciplina .
+  ?disciplina :nome ?disciplinaNome .
+}
+GROUP BY ?disciplinaNome
+
+20. Qual a distribuição de conceitos por período histórico? (Resultado será uma lista de pares: Período, número de conceitos)
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?periodoNome (COUNT(?conceito) AS ?numeroDeConceitos)
+WHERE {
+  ?conceito :surgeEm ?periodo .
+  ?periodo :nome ?periodoNome .
+}
+GROUP BY ?periodoNome
+
+21. Quais os títulos das obras associadas a cada conceito? (Resultado será uma lista de pares: Conceito, Lista de títulos de obras)
+
+SELECT ?conceitoNome (GROUP_CONCAT(?obraTitulo; SEPARATOR=", ") AS ?titulosDasObras)
+WHERE {
+  ?obra :explica ?conceito .
+  ?conceito :nome ?conceitoNome .
+  ?obra :titulo ?obraTitulo .
+}
+GROUP BY ?conceitoNome
+
+22. Quais os aprendizes que frequentam cada uma das disciplinas? (Resultado será uma lista de pares: Disciplina, Lista dos nomes dos aprendizes que frequentam a disciplina)
+
+SELECT ?disciplinaNome (GROUP_CONCAT(?aprendizNome; SEPARATOR=", ") AS ?nomesDosAprendizes)
+WHERE {
+  ?aprendiz :aprende ?disciplina .
+  ?disciplina :nome ?disciplinaNome .
+  ?aprendiz :nome ?aprendizNome .
+}
+GROUP BY ?disciplinaNome
+
+23.  Qual a distribuição de aprendizes por escalões etários? (Resultado será uma lista de pares:
+Escalão etário, número aprendizes nesse escalão); Considera os seguintes escalões: [17, 34], [35,
+44], [45, 54], [55, 64], [65, 74], [75, 100].
+
+PREFIX : <http://www.semanticweb.org/jojocoelho/ontologies/2025/academia/>
+
+SELECT ?escalao (COUNT(?aprendiz) AS ?numeroDeAprendizes)
+WHERE {
+  ?aprendiz :idade ?idade .
+  BIND(
+    IF(?idade >= 17 && ?idade <= 34, "[17, 34]",
+    IF(?idade >= 35 && ?idade <= 44, "[35, 44]",
+    IF(?idade >= 45 && ?idade <= 54, "[45, 54]",
+    IF(?idade >= 55 && ?idade <= 64, "[55, 64]",
+    IF(?idade >= 65 && ?idade <= 74, "[65, 74]",
+    IF(?idade >= 75 && ?idade <= 100, "[75, 100]", "Fora do Escalão")))))) AS ?escalao)
+}
+GROUP BY ?escalao
